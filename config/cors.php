@@ -24,7 +24,7 @@ return [
     'supportsCredentials'    => false,
     'allowedOrigins'         => ['*'],
     'allowedOriginsPatterns' => [],
-    'allowedHeaders'         => ['X-Cachet-Token'],
+    'allowedHeaders'         => ['X-Cachet-Token', 'Content-Type', 'Accept'],
     'allowedMethods'         => ['*'],
     'exposedHeaders'         => [],
     'maxAge'                 => 3600,
