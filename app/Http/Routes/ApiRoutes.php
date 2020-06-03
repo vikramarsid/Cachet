@@ -61,11 +61,11 @@ class ApiRoutes
 
                 $router->get('schedules', 'ScheduleController@index');
                 $router->get('schedules/{schedule}', 'ScheduleController@show');
-
-                $router->get('subscribers', 'SubscriberController@index');
             });
 
-            $router->group(['middleware' => ['auth.api:true']], function (Registrar $router) {
+            $router->group(['middleware' => ['auth.api:true', 'cors']], function (Registrar $router) {
+
+                $router->get('subscribers', 'SubscriberController@index');
 
                 $router->post('components', 'ComponentController@store');
                 $router->post('components/groups', 'ComponentGroupController@store');
