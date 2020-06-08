@@ -63,7 +63,8 @@ class ApiRoutes
                 $router->get('schedules/{schedule}', 'ScheduleController@show');
             });
 
-            $router->group(['middleware' => ['auth.api:true']], function (Registrar $router) {
+            $router->group(['middleware' => ['auth.api:true', 'cors']], function (Registrar $router) {
+
                 $router->get('subscribers', 'SubscriberController@index');
 
                 $router->post('components', 'ComponentController@store');
@@ -81,6 +82,7 @@ class ApiRoutes
                 $router->put('incidents/{incident}/updates/{update}', 'IncidentUpdateController@update');
                 $router->put('metrics/{metric}', 'MetricController@update');
                 $router->put('metrics/{metric}/points/{metric_point}', 'MetricPointController@update');
+                $router->put('subscribers/{subscriber}', 'SubscriberController@update');
                 $router->put('schedules/{schedule}', 'ScheduleController@update');
 
                 $router->delete('components/groups/{component_group}', 'ComponentGroupController@destroy');

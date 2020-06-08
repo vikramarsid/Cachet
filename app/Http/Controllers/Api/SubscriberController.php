@@ -11,8 +11,10 @@
 
 namespace CachetHQ\Cachet\Http\Controllers\Api;
 
+use CachetHQ\Cachet\Bus\Commands\Subscriber\GetSubscriberByIdCommand;
 use CachetHQ\Cachet\Bus\Commands\Subscriber\SubscribeSubscriberCommand;
 use CachetHQ\Cachet\Bus\Commands\Subscriber\UnsubscribeSubscriberCommand;
+use CachetHQ\Cachet\Bus\Commands\Subscriber\UpdateSubscriberSubscriptionCommand;
 use CachetHQ\Cachet\Models\Subscriber;
 use GrahamCampbell\Binput\Facades\Binput;
 use Illuminate\Contracts\Config\Repository;
@@ -56,6 +58,26 @@ class SubscriberController extends AbstractApiController
         }
 
         return $this->item($subscriber);
+    }
+
+    /**
+     * Update existing subscriber.
+     *
+     * @param \CachetHQ\Cachet\Models\Subscriber $subscriber
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Subscriber $subscriber)
+    {
+
+        try {
+            execute(new UpdateSubscriberSubscriptionCommand($subscriber, Binput::get('components')));
+            $updatedSubscriber = $subscriber->load('subscriptions');;
+        } catch (QueryException $e) {
+            throw new BadRequestHttpException();
+        }
+
+        return $this->item($updatedSubscriber);
     }
 
     /**
