@@ -41,13 +41,14 @@ class SubscribeSubscriberCommandHandler
             return $subscriber;
         }
 
-        $subscriber = Subscriber::firstOrCreate(['email' => $command->email]);
+        $subscriber = Subscriber::firstOrCreate(['email' => $command->email, 'global' => false]);
 
         // Decide what to subscribe the subscriber to.
         if ($subscriptions = $command->subscriptions) {
             $components = Component::whereIn('id', $subscriptions)->get();
         } else {
             $components = Component::all();
+            $subscriber->global = true;
         }
 
         $components->each(function ($component) use ($subscriber) {
