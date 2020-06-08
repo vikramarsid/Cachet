@@ -38,6 +38,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Dispatcher $dispatcher)
     {
+        // Begin hotfix
+        if (getenv('APP_URL')) {
+            if (strpos(getenv('APP_URL'), 'https') === 0) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+            \Illuminate\Support\Facades\URL::forceRootUrl(getenv('APP_URL'));
+        }
+        // End hotfix
+
         Schema::defaultStringLength(191);
 
         $dispatcher->mapUsing(function ($command) {

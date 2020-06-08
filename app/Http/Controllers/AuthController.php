@@ -66,7 +66,7 @@ class AuthController extends Controller
 
             event(new UserLoggedInEvent(Auth::user()));
 
-            return Redirect::intended(cachet_route('dashboard'));
+            return cachet_redirect('dashboard');
         }
 
         return cachet_redirect('auth.login')
@@ -114,7 +114,7 @@ class AuthController extends Controller
 
                 event(new UserLoggedInEvent($user));
 
-                return Redirect::intended('dashboard');
+                return cachet_redirect('dashboard');
             } else {
                 event(new UserFailedTwoAuthEvent($user));
 

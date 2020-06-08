@@ -52,31 +52,36 @@ class SubscribersConfigured
      * @param  bool  $absolute
      * @return bool
      */
-    public function hasValidSignature(Request $request, $absolute = true)
+    public function hasValidSignatureCheck(Request $request, $absolute = true)
     {
+        Log::debug("============================== DEV LOGGING =====================================");
         $url = $absolute ? $request->url() : '/'.$request->path();
-        Log::info("URL: ".$url);
+        Log::debug("URL: ".$url);
 
         $original = rtrim($url.'?'.Arr::query(
                 Arr::except($request->query(), 'signature')
             ), '?');
 
-        Log::info("ORIGINAL: ".$original);
+        Log::debug("ORIGINAL: ".$original);
 
         $expires = $request->query('expires');
-        Log::info("EXPIRES: ".$expires);
+        Log::debug("EXPIRES: ".$expires);
 
-        Log::info("APP_KEY: ".(string) $this->config->get("app")["key"]);
+        Log::debug("APP_KEY: ".(string) $this->config->get("app")["key"]);
 
         $signature = hash_hmac('sha256', $original, $this->config->get("app")["key"]);
-        Log::info("GENERATED_SIGNATURE: ".$signature);
+        Log::debug("GENERATED_SIGNATURE: ".$signature);
 
-        Log::info("ORIGINAL_SIGNATURE: ".(string) $request->query('signature', ''));
+        Log::debug("ORIGINAL_SIGNATURE: ".(string) $request->query('signature', ''));
 
-        Log::info("TIME_CHECK: ".(string) ! ($expires && Carbon::now()->getTimestamp() > $expires));
+        Log::debug("TIME_CHECK: ".(string) ! ($expires && Carbon::now()->getTimestamp() > $expires));
 
-        return  hash_equals($signature, (string) $request->query('signature', '')) &&
+        $status = hash_equals($signature, (string) $request->query('signature', '')) &&
             ! ($expires && Carbon::now()->getTimestamp() > $expires);
+
+        Log::debug("STATUS: ".$status);
+        Log::debug("============================== DEV LOGGING =====================================");
+        return $status;
     }
 
     /**
@@ -89,10 +94,10 @@ class SubscribersConfigured
      */
     public function handle(Request $request, Closure $next)
     {
-        Log::info("============================== DEV LOGGING =====================================");
-        $status = $this->hasValidSignature($request);
-        Log::info("STATUS: ".$status);
-        Log::info("============================== DEV LOGGING =====================================");
+        if ($this->config->get("app")["debug"]) {
+            $this->hasValidSignatureCheck($request);
+        }
+
         return $next($request);
     }
 }
